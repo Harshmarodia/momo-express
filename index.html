@@ -1052,6 +1052,21 @@
       .menu-grid { grid-template-columns: 1fr; }
       .cart-drawer { width: 100%; }
       .nav-phone { display: none; }
+
+      /* Mobile Layout & Navbar Overflow Fixes */
+      html, body { overflow-x: hidden; width: 100%; position: relative; }
+      .navbar { padding: 0; }
+      .nav-inner { height: 60px; padding: 0 10px; gap: 8px; }
+      .nav-logo-text h1 { font-size: 0.85rem; line-height: 1.2; max-width: 140px; white-space: normal; }
+      .nav-logo-text span { display: none; }
+      .nav-logo-icon { font-size: 1.3rem; }
+      .nav-actions { gap: 6px; }
+      .nav-actions .btn { padding: 6px 10px; font-size: 0.72rem; }
+      .cart-btn { padding: 6px 12px; font-size: 0.72rem; }
+      .veg-tag-container { display: none !important; }
+      
+      .categories-section { padding-top: 30px; }
+      .categories-section h2 { font-size: 1.2rem; }
     }
   </style>
 </head>
