@@ -1038,7 +1038,8 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+      .hero-inner { grid-template-columns: minmax(0, 1fr); text-align: center; gap: 32px; }
+      .hero-left, .hero-right { min-width: 0; width: 100%; overflow: hidden; }
       .hero-delivery { justify-content: center; }
       .hero-cta { justify-content: center; }
       .hero-title { font-size: 2.2rem; }
@@ -1046,9 +1047,25 @@
       .hero-food-main { width: 160px; height: 160px; font-size: 4rem; }
     }
     @media (max-width: 600px) {
-      .hero { min-height: 70vh; }
-      .hero-inner { padding: 40px 20px; }
-      .hero-title { font-size: 1.8rem; }
+      .hero { min-height: 60vh; }
+      .hero-inner { padding: 30px 16px; gap: 24px; }
+      .hero-title { font-size: 1.8rem; margin-bottom: 12px; }
+      .hero-badge { margin-bottom: 12px; }
+      .hero-slogan { margin-bottom: 16px; }
+      
+      .hero-delivery { justify-content: center; gap: 8px; margin-bottom: 20px; }
+      .hero-delivery-tag { font-size: 0.75rem; padding: 6px 12px; }
+      
+      .hero-cta { gap: 10px; }
+      .hero-cta .btn, .hero-cta .btn-lg { padding: 10px 20px; font-size: 0.88rem; border-radius: 30px; }
+      
+      .hero-kitchen-img { height: 260px; }
+      .hero-kitchen-badge { bottom: 12px; left: 12px; padding: 8px 12px; max-width: calc(100% - 24px); }
+      .hero-kitchen-badge-icon { width: 30px; height: 30px; }
+      .hero-kitchen-badge-icon svg { width: 16px; height: 16px; }
+      .hero-kitchen-badge-text strong { font-size: 0.78rem; }
+      .hero-kitchen-badge-text span { font-size: 0.65rem; }
+
       .menu-grid { grid-template-columns: 1fr; }
       .cart-drawer { width: 100%; }
       .nav-phone { display: none; }
