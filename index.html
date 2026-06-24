@@ -1788,7 +1788,7 @@
 /* =============================================================
    CONFIG
 ============================================================= */
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.protocol === 'file:' ? 'http://localhost:3001/api' : window.location.origin + '/api';
 const BAKERY_PINCODE = '380051';
 const AHM_PREFIXES   = ['380','382','383','384','385','387','388','389'];
 const DELIVERY_CHARGE = 30;   // ₹30 for other Ahmedabad when subtotal < ₹149
