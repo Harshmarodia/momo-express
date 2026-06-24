@@ -295,11 +295,11 @@
 
     /* ===== BACKEND STATUS BANNER ===== */
     .backend-banner {
+      display: none;
       padding: 8px 20px;
       text-align: center;
       font-size: 0.78rem;
       font-weight: 600;
-      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
@@ -2098,13 +2098,16 @@ async function fetchMenu() {
 function setBannerOnline() {
   const b = document.getElementById('backendBanner');
   b.className = 'backend-banner online';
+  b.style.display = 'none';
   b.querySelector('.backend-dot').className = 'backend-dot';
   document.getElementById('backendStatus').textContent = 'Server connected — Orders will be saved securely';
 }
 function setBannerOffline() {
   const b = document.getElementById('backendBanner');
   b.className = 'backend-banner offline';
+  b.style.display = 'flex';
   document.getElementById('backendStatus').textContent = 'Offline mode — Run server.js to enable full features (npm start)';
+  showToast('Connection lost! Running in Offline Mode.', 'error');
 }
 
 /* =============================================================
