@@ -72,6 +72,7 @@
       background: var(--saffron);
       color: var(--white);
     }
+    .nav-login-mobile { display: none; }
     .cart-btn {
       position: relative;
       background: linear-gradient(135deg, var(--saffron), var(--saffron-dark));
@@ -1081,6 +1082,8 @@
       .nav-actions .btn { padding: 6px 10px; font-size: 0.72rem; }
       .cart-btn { padding: 6px 12px; font-size: 0.72rem; }
       .veg-tag-container { display: none !important; }
+      .nav-login-desktop { display: none; }
+      .nav-login-mobile { display: inline-block; }
       
       .categories-section { padding-top: 30px; }
       .categories-section h2 { font-size: 1.2rem; }
@@ -1114,7 +1117,10 @@
     <div class="nav-actions">
       <a href="tel:7461900381" class="nav-phone">7461900381</a>
       <div id="customerAuthSection">
-        <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Login / Register</button>
+        <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">
+          <span class="nav-login-desktop">Login / Register</span>
+          <span class="nav-login-mobile">Login</span>
+        </button>
       </div>
       <button class="cart-btn" onclick="openCart()" id="cartNavBtn">
         Cart
@@ -2188,7 +2194,10 @@ function updateAuthUI() {
     onPincodeInput();
   } else {
     section.innerHTML = `
-      <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Login / Register</button>
+      <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">
+        <span class="nav-login-desktop">Login / Register</span>
+        <span class="nav-login-mobile">Login</span>
+      </button>
     `;
   }
 }
