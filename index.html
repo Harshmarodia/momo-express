@@ -1067,6 +1067,7 @@
       
       .categories-section { padding-top: 30px; }
       .categories-section h2 { font-size: 1.2rem; }
+      .nav-sub-btn { display: none !important; }
     }
   </style>
 </head>
@@ -1086,7 +1087,7 @@
   <div class="nav-inner">
     <div class="nav-logo" onclick="showPage('home')" style="cursor:pointer">
       <div class="nav-logo-text">
-        <h1 style="display:flex;align-items:center;gap:8px">Bihar & Nepal Momo Express</h1>
+        <h1 style="font-weight: 800; font-family: 'Outfit', sans-serif;">Bihar & Nepal Momo Express</h1>
         <div style="display:flex;align-items:center;gap:6px">
           <span>Har Swad Mein Maa Ka Haath</span>
           <span class="veg-tag-container" style="padding:1px 4px;font-size:0.58rem"><span class="veg-icon-border" style="width:10px;height:10px;border-width:1px"><span class="veg-icon-circle" style="width:4px;height:4px"></span></span>Pure Veg</span>
@@ -2138,7 +2139,7 @@ function updateAuthUI() {
   if (currentCustomer) {
     section.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px">
-        <button class="btn btn-outline btn-sm" onclick="showPage('subscriptions')">My Subscriptions</button>
+        <button class="btn btn-outline btn-sm nav-sub-btn" onclick="showPage('subscriptions')">My Subscriptions</button>
         <div class="user-dropdown">
           <button class="dropdown-btn" onclick="toggleDropdownMenu(event)">
             Hi, ${currentCustomer.name.split(' ')[0]} ▾
