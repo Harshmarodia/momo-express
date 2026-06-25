@@ -1066,7 +1066,7 @@
       .hero-cta { gap: 10px; }
       .hero-cta .btn, .hero-cta .btn-lg { padding: 10px 20px; font-size: 0.88rem; border-radius: 30px; }
       
-      .hero-kitchen-img { height: 260px; }
+      .hero-kitchen-img { height: auto; aspect-ratio: 1 / 1; }
       .hero-kitchen-badge { bottom: 12px; left: 12px; padding: 8px 12px; max-width: calc(100% - 24px); }
       .hero-kitchen-badge-icon { width: 30px; height: 30px; }
       .hero-kitchen-badge-icon svg { width: 16px; height: 16px; }
@@ -1182,6 +1182,7 @@
         </div>
         <div class="hero-cta">
           <button class="btn btn-gold btn-lg" onclick="scrollToMenu()">Order Now</button>
+          <button class="btn btn-ghost btn-lg" onclick="openPamphletModal()">Menu Card</button>
           <a href="tel:7461900381" class="btn btn-ghost btn-lg">Call Us</a>
         </div>
       </div>
@@ -1594,6 +1595,25 @@
       style="margin-top:12px;border-radius:var(--radius-md)">
       Checkout par Jao →
     </button>
+  </div>
+</div>
+
+<!-- ========================================================
+     MENU PAMPHLET / MARKETING MODAL
+======================================================== -->
+<div class="modal-overlay hidden" id="menuPamphletModal" onclick="closePamphletModal()">
+  <div class="modal-box" style="max-width:550px; background:var(--maroon); border:2px solid var(--gold)" onclick="event.stopPropagation()">
+    <div class="modal-header" style="border-bottom:1px solid rgba(255,215,0,0.2)">
+      <h3 style="color:var(--gold); font-family:'Outfit',sans-serif">Our Menu Card & Pamphlet</h3>
+      <button class="modal-close" onclick="closePamphletModal()" style="background:rgba(255,255,255,0.1); color:white">×</button>
+    </div>
+    <div class="modal-body" style="padding:15px; text-align:center">
+      <img src="menu_pamphlet.jpg" alt="Menu Pamphlet" style="width:100%; height:auto; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.5); border:1px solid rgba(255,215,0,0.3)" />
+      <div style="margin-top:15px; display:flex; gap:10px; justify-content:center">
+        <a href="menu_pamphlet.jpg" download="Bihar_Nepal_Momo_Express_Menu.jpg" class="btn btn-gold">📥 Download Menu Card</a>
+        <button class="btn btn-ghost" onclick="closePamphletModal()">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2065,9 +2085,12 @@ Orders ₹399+ Get 2 Free Samosa!`;
 /* =============================================================
    BACKEND CHECK & FETCH DYNAMIC MENU
 ============================================================= */
+let wasOnline = false;
+let checkBackendTimer = null;
+
 async function checkBackend() {
   try {
-    const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(3000) });
+    const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(5000) });
     if (r.ok) {
       backendOnline = true;
       setBannerOnline();
@@ -2089,18 +2112,34 @@ async function checkBackend() {
         localStorage.setItem('bnme_menu_active', JSON.stringify(menuActive));
       }
       renderMenuSection(currentCat);
+      
+      // Initialize voice search
+      initVoiceSearch();
+      
+      if (checkBackendTimer) {
+        clearInterval(checkBackendTimer);
+        checkBackendTimer = null;
+      }
+      return;
     }
-  } catch {
-    backendOnline = false;
-    setBannerOffline();
-    // Use default menu
-    MENU = DEFAULT_MENU;
-    activeCoupons = [];
-    renderMenuSection(currentCat);
+  } catch (err) {
+    console.warn("Backend check failed, retrying in 5 seconds...", err);
   }
+  
+  backendOnline = false;
+  setBannerOffline();
+  
+  // Use default menu
+  MENU = DEFAULT_MENU;
+  activeCoupons = [];
+  renderMenuSection(currentCat);
   
   // Initialize voice search
   initVoiceSearch();
+  
+  if (!checkBackendTimer) {
+    checkBackendTimer = setInterval(checkBackend, 5000);
+  }
 }
 
 async function fetchMenu() {
@@ -2130,13 +2169,19 @@ function setBannerOnline() {
   b.style.display = 'none';
   b.querySelector('.backend-dot').className = 'backend-dot';
   document.getElementById('backendStatus').textContent = 'Server connected — Orders will be saved securely';
+  wasOnline = true;
 }
 function setBannerOffline() {
   const b = document.getElementById('backendBanner');
   b.className = 'backend-banner offline';
   b.style.display = 'flex';
-  document.getElementById('backendStatus').textContent = 'Offline mode — Run server.js to enable full features (npm start)';
-  showToast('Connection lost! Running in Offline Mode.', 'error');
+  if (wasOnline) {
+    document.getElementById('backendStatus').textContent = 'Offline mode — Run server.js to enable full features (npm start)';
+    showToast('Connection lost! Running in Offline Mode.', 'error');
+    wasOnline = false;
+  } else {
+    document.getElementById('backendStatus').textContent = 'Connecting to server (waking up Render free instance)...';
+  }
 }
 
 /* =============================================================
@@ -2231,6 +2276,14 @@ function openModal(id) {
 function closeModal(id) {
   const m = document.getElementById(id);
   if (m) m.classList.add('hidden');
+}
+
+function openPamphletModal() {
+  document.getElementById('menuPamphletModal').classList.remove('hidden');
+}
+
+function closePamphletModal() {
+  document.getElementById('menuPamphletModal').classList.add('hidden');
 }
 
 function openAuthModal(mode = 'login') {
