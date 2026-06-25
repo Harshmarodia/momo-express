@@ -1034,7 +1034,13 @@
     .whatsapp-float:hover .whatsapp-tooltip { opacity: 1; }
 
     /* Page sections toggle */
-    .page-section { display: none; }
+    .page-section {
+      display: none;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
     .page-section.active { display: block; }
 
     /* ===== RESPONSIVE ===== */

@@ -1945,18 +1945,93 @@ async function saveMarqueeText() {
 }
 
 /* =============================================================
+   ADMIN NOTIFICATIONS (AUDIO & BROWSER NOTIFICATION API)
+============================================================= */
+function requestNotificationPermission() {
+  if ('Notification' in window) {
+    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          showToast('Notifications enabled!', 'success');
+        }
+      });
+    }
+  }
+}
+
+function playNotificationSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const playBeep = (time, freq) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.5, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+      osc.start(time);
+      osc.stop(time + 0.3);
+    };
+    // Play two quick high-pitched alert beeps
+    playBeep(audioCtx.currentTime, 880);
+    playBeep(audioCtx.currentTime + 0.4, 880);
+  } catch (e) {
+    console.error("Audio Context Error:", e);
+  }
+}
+
+function showOrderNotification(order) {
+  playNotificationSound();
+  const shortId = order.id ? order.id.slice(-6) : 'New';
+  showToast(`🔔 New Order! #${shortId} - ₹${order.total}`, 'info');
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification("New Order Received! 🍕", {
+      body: `Order #${shortId} - ₹${order.total} - ${order.name} (${order.phone})`,
+      icon: 'product_default.jpg',
+      tag: 'new-order-' + order.id
+    });
+  }
+}
+
+function showSubscriptionNotification(sub) {
+  playNotificationSound();
+  showToast(`🔔 New Tiffin Subscription! Plan: ${sub.planName}`, 'info');
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification("New Tiffin Subscription! 📅", {
+      body: `${sub.name} - Plan: ${sub.planName} (${sub.durationDays} Days) - ${sub.phone}`,
+      icon: 'product_default.jpg',
+      tag: 'new-sub-' + sub.id
+    });
+  }
+}
+
+/* =============================================================
    INIT
 ============================================================= */
-function initAdmin() {
+async function initAdmin() {
   if (isLoggedIn) {
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('adminApp').classList.remove('hidden');
+    requestNotificationPermission();
+    
+    // Load initial data so we don't trigger notifications for existing items on login
+    try {
+      await loadOrders();
+      await loadAdminSubscriptions();
+    } catch (e) {
+      console.warn("Could not load initial data on login", e);
+    }
   }
   checkBackend();
   
   // Auto-refresh every 12s
   setInterval(async () => {
     if (isLoggedIn) {
+      // Keep track of old IDs to check for newly created items
+      const oldOrderIds = new Set(orders.map(o => o.id));
+      const oldSubIds = new Set(adminSubscriptions ? adminSubscriptions.map(s => s.id) : []);
+
       await loadOrders();
       updateDashboard();
       renderOrders();
@@ -1965,6 +2040,22 @@ function initAdmin() {
       // Auto-refresh subscriptions
       await loadAdminSubscriptions();
       renderAdminSubscriptions();
+
+      // Check for new orders
+      const newOrders = orders.filter(o => !oldOrderIds.has(o.id));
+      if (newOrders.length > 0 && oldOrderIds.size > 0) {
+        newOrders.forEach(o => {
+          showOrderNotification(o);
+        });
+      }
+
+      // Check for new subscriptions
+      const newSubs = adminSubscriptions ? adminSubscriptions.filter(s => !oldSubIds.has(s.id)) : [];
+      if (newSubs.length > 0 && oldSubIds.size > 0) {
+        newSubs.forEach(s => {
+          showSubscriptionNotification(s);
+        });
+      }
     }
   }, 12000);
 }
